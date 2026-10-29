@@ -316,12 +316,12 @@ def hero(c, x, y, lang, bg):
     return "".join(p)
 
 
-def editor_card(c, x, y, w, h, lang, show=12, status_line=True):
+def editor_card(c, x, y, w, h, lang, show=12, status_line=True, lines=None):
     t = L[lang]
     p = [card(c, x, y, w, h)]
     ly = y + 38
     lx = x + 46
-    for i, (s, role) in enumerate(LINES[lang][:show]):
+    for i, (s, role) in enumerate((lines or LINES[lang])[:show]):
         p.append(T(x + 36, ly, str(i + 1), 11, c["sec"], 400, "end", bg=c["card"], font=MONO))
         if role == "kv":
             k, v = s.split(": ", 1)
@@ -492,7 +492,8 @@ def s05(c, lang="ja"):
     s.add(f'<rect x="8" y="{sy}" width="{W-16}" height="{H-sy-8}" rx="40" fill="{sh}"/>',
           f'<rect x="{W/2-18}" y="{sy+8}" width="36" height="5" rx="2.5" fill="{c["sec"]}" fill-opacity="0.5"/>',
           T(W / 2, sy + 52, t["lint_title"], 16, c["text"], 600, "middle", bg=sh),
-          f'<circle cx="44" cy="{sy+46}" r="20" fill="{c["fill"]}"/>' + ico("x", 44, sy + 46, c["text"], 1.8, 0.8))
+          f'<circle cx="44" cy="{sy+46}" r="20" fill="{c["fill"]}"/>' + ico("x", 44, sy + 46, c["text"], 1.8, 0.8),
+          f'<circle cx="{W-44}" cy="{sy+46}" r="20" fill="{c["fill"]}"/>' + ico("share", W - 44, sy + 46, c["text"], 1.7, 0.85))
     s.add(T(28, sy + 124, "6/7", 52, c["text"], 500, bg=sh, font=DISP, ls=-2))
     s.add(T(126, sy + 108, t["warn1"], 17, c["text"], 600, bg=sh), T(126, sy + 128, t["spec_line"], 13, c["sec"], 400, bg=sh))
     y = sy + 150
@@ -1098,6 +1099,136 @@ def s22(c, new=False):
     return s.svg()
 
 
+def seg2(c, x, y, w, a, b, first, bg):
+    sw = w / 2
+    on_x = x + 3 if first else x + sw + 3
+    out = [f'<rect x="{x}" y="{y}" width="{w}" height="40" rx="20" fill="{c["fill"] if bg != c["fill"] else c["card"]}"/>',
+           f'<rect x="{on_x:.1f}" y="{y+3}" width="{sw-6:.1f}" height="34" rx="17" fill="{c["pill"]}"/>']
+    segbg = c["fill"] if bg != c["fill"] else c["card"]
+    out.append(T(x + sw / 2, y + 26, a, 14, c["pill_ink"] if first else c["text"], 600, "middle", bg=c["pill"] if first else segbg))
+    out.append(T(x + sw * 1.5, y + 26, b, 14, c["text"] if first else c["pill_ink"], 600, "middle", bg=segbg if first else c["pill"]))
+    return "".join(out)
+
+
+def score_card(x, y, w, lang):
+    """Shareable 1200x630 card preview, always drawn in its own light theme."""
+    k = LIGHT
+    h = w * 630 / 1200
+    sc = w / 370
+    ja = lang == "ja"
+    o = [f'<rect x="{x}" y="{y}" width="{w}" height="{h:.1f}" rx="18" fill="#FFFFFF" stroke="#E2E2E2"/>']
+    o.append(T(x + 20 * sc, y + 30 * sc, "tea-timer", 13, "#0A0A0A", 600, bg="#FFFFFF", font=MONO))
+    o.append(T(x + 20 * sc, y + 46 * sc, "SKILL.md", 11, "#6B6B6B", 400, bg="#FFFFFF", font=MONO))
+    o.append(T(x + 18 * sc, y + 118 * sc, "6/7", 56, "#0A0A0A", 500, bg="#FFFFFF", font=DISP, ls=-2))
+    o.append(T(x + 20 * sc, y + 146 * sc, "決まりに合格" if ja else "rules passed", 12, "#6B6B6B", 400, bg="#FFFFFF"))
+    bx = x + 160 * sc
+    labs = [("起動時" if ja else "Always", 62, 0.18), ("呼ばれたとき" if ja else "Triggered", 120, 0.36), ("必要なとき" if ja else "On demand", 240, 0.7)]
+    for i, (lab, tok, f) in enumerate(labs):
+        by = y + (70 + i * 30) * sc
+        o.append(T(bx, by, lab, 11, "#6B6B6B", 400, bg="#FFFFFF"))
+        o.append(f'<rect x="{bx:.1f}" y="{by+6:.1f}" width="{190*sc:.1f}" height="5" rx="2.5" fill="#ECECEC"/>')
+        o.append(f'<rect x="{bx:.1f}" y="{by+6:.1f}" width="{190*sc*f:.1f}" height="5" rx="2.5" fill="#0A0A0A"/>')
+        o.append(T(x + w - 18 * sc, by, (f"約{tok}" if ja else f"~{tok}"), 11, "#0A0A0A", 500, "end", bg="#FFFFFF", font=SANS if ja else MONO))
+    o.append(T(x + w - 18 * sc, y + h - 14 * sc, "Skillwright", 11, "#0A0A0A", 700, "end", bg="#FFFFFF"))
+    o.append(T(x + 20 * sc, y + h - 14 * sc, "決まり 2026.10.30" if ja else "rules 2026.10.30", 11, "#6B6B6B", 400, bg="#FFFFFF", font=SANS if ja else MONO))
+    return "".join(o), h
+
+
+def s23(c, lang="ja", badge=False):
+    ja = lang == "ja"
+    s = Screen(c)
+    s.add(status(c, W), nav(c, W, "共有" if ja else "Share", "tea-timer", "back", None))
+    y = 124
+    s.add(seg2(c, 16, y, W - 32, "カード" if ja else "Card", "バッジ" if ja else "Badge", not badge, c["bg"]))
+    y += 64
+    if not badge:
+        svg_card, ch = score_card(16, y, W - 32, lang)
+        s.add(svg_card)
+        y += ch + 24
+        s.add(card(c, 16, y, W - 32, 104, r=24))
+        s.add(T(34, y + 32, "見た目" if ja else "Appearance", 16, c["text"], 400, bg=c["card"]),
+              T(W - 52, y + 32, ("ライト" if ja else "Light"), 14, c["sec"], 400, "end", bg=c["card"]),
+              f'<path d="M{W-42} {y+24}l4 -4 4 4M{W-42} {y+31}l4 4 4 -4" fill="none" stroke="{c["sec"]}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>',
+              hair(c, 34, y + 52, W - 68),
+              T(34, y + 82, "リポ名を出す" if ja else "Show repo name", 16, c["text"], 400, bg=c["card"]), toggle(c, W - 82, y + 62, True))
+        y += 128
+        s.add(T(24, y, "画像はこの iPhone の中で作ります。どこにも送りません。" if ja else "Made on this iPhone. Nothing is uploaded.", 13, c["sec"], 400))
+        s.add(pill(c, 16, H - 102, W - 32, "共有" if ja else "Share"), home(c, W, H))
+        return s.svg()
+    # badge
+    s.add(card(c, 16, y, W - 32, 120, r=24))
+    bw1, bw2, bh = 104, 72, 28
+    bx = (W - bw1 - bw2) / 2
+    by = y + 46
+    s.add(f'<rect x="{bx:.1f}" y="{by}" width="{bw1+bw2}" height="{bh}" rx="6" fill="#0A0A0A"/>',
+          f'<path d="M{bx+bw1:.1f} {by}h{bw2-6}a6 6 0 0 1 6 6v{bh-12}a6 6 0 0 1 -6 6h-{bw2-6}z" fill="#ECECEC"/>',
+          T(bx + bw1 / 2, by + 19, "Skillwright", 13, "#FFFFFF", 600, "middle", bg="#0A0A0A"),
+          T(bx + bw1 + bw2 / 2, by + 19, "✓ 6/7", 13, "#0A0A0A", 600, "middle", bg="#ECECEC", font=MONO),
+          T(W / 2, y + 102, "GitHub の main・a1b2c3d・10:42 に検査" if ja else "Checked on GitHub main · a1b2c3d · 10:42", 12, c["sec"], 400, "middle", bg=c["card"]))
+    y += 144
+    s.add(caption(c, 24, y, "README に貼る1行" if ja else "PASTE INTO README"))
+    y += 10
+    s.add(card(c, 16, y, W - 32, 96, fill=c["card"], r=18))
+    snip = ["[![Skillwright](https://skillwright.", "seventh-well.com/badge/teapot-labs/", "tea-timer-skill/tea-timer.svg)](…)"]
+    for i, ln in enumerate(snip):
+        s.add(T(32, y + 28 + i * 22, ln, 12, c["text"], 400, bg=c["card"], font=MONO))
+    y += 112
+    s.add(card(c, 16, y, W - 32, 56, r=24), T(34, y + 34, "反映のとき README に入れる" if ja else "Add to README on publish", 16, c["text"], 400, bg=c["card"]), toggle(c, W - 82, y + 12.5, False))
+    y += 80
+    s.add(T(24, y, "公開リポだけ使えます。数字はサーバーで検査し直します。" if ja else "Public repos only. The server re-checks the score.", 13, c["sec"], 400))
+    s.add(pill(c, 16, H - 102, W - 32, "1行をコピー" if ja else "Copy Markdown"), home(c, W, H))
+    return s.svg()
+
+
+def s24(c, lang="ja", done=False):
+    ja = lang == "ja"
+    s = Screen(c)
+    s.add(status(c, W), nav(c, W, "声から作る" if ja else "Speak a Skill", None, "x", None))
+    if not done:
+        s.add(T(W / 2, 200, "0:42", 64, c["text"], 500, "middle", font=DISP, ls=-2),
+              T(W / 2, 232, "録音中・最長 5:00" if ja else "Recording · up to 5:00", 13, c["sec"], 400, "middle"))
+        import math as _m
+        for i in range(36):
+            hgt = 6 + 34 * abs(_m.sin(i * 0.55) * _m.cos(i * 0.17))
+            s.add(f'<rect x="{39+i*9:.1f}" y="{290-hgt/2:.1f}" width="4" height="{hgt:.1f}" rx="2" fill="{c["text"] if i < 26 else c["hair"]}"/>')
+        y = 334
+        s.add(card(c, 16, y, W - 32, 236))
+        s.add(caption(c, 36, y + 32, "書き起こし" if ja else "TRANSCRIPT", c["card"]))
+        lines = (["お茶の淹れ方を聞かれたときに使うスキル。", "まず茶葉の種類を聞いて、紅茶なら95度で", "3分、緑茶なら70度で1分。熱すぎたら", "30秒待ってから淹れ直すように言う。"]
+                 if ja else ["A skill for when someone asks how to", "brew tea. First ask which tea. Black tea", "is 95°C for 3 minutes, green tea 70°C", "for 1 minute. If it is too hot, wait…"])
+        for i, ln in enumerate(lines):
+            s.add(T(36, y + 70 + i * 28, ln, 16, c["text"] if i < 3 else c["sec"], 400, bg=c["card"]))
+        s.add(f'<rect x="{36+tw(lines[-1],16)+3:.1f}" y="{y+70+3*28-16}" width="2" height="20" fill="{c["text"]}"/>')
+        lang_lab = "日本語" if ja else "English"
+        lw_ = tw(lang_lab, 13)
+        s.add(f'<rect x="28" y="{y+194}" width="{lw_+40:.1f}" height="30" rx="15" fill="none" stroke="{c["btn_line"]}"/>',
+              T(42, y + 214, lang_lab, 13, c["sec"], 500, bg=c["card"]),
+              f'<path d="M{46+lw_:.1f} {y+205}l3 -3 3 3M{46+lw_:.1f} {y+212}l3 3 3 -3" fill="none" stroke="{c["sec"]}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>',
+              T(lw_ + 82, y + 214, "音声は保存しません" if ja else "Audio is not saved", 12, c["sec"], 400, bg=c["card"]))
+        cx, cy = W / 2, H - 130
+        s.add(f'<circle cx="{cx}" cy="{cy}" r="38" fill="{c["pill"]}"/><rect x="{cx-11}" y="{cy-11}" width="22" height="22" rx="4" fill="{c["pill_ink"]}"/>',
+              T(cx, cy + 66, "止めて作る" if ja else "Stop and Build", 14, c["text"], 600, "middle"))
+        s.add(home(c, W, H))
+        return s.svg()
+    y = 132
+    s.add(T(24, y + 20, "できました" if ja else "Draft ready", 28, c["text"], 700),
+          T(24, y + 46, "内蔵 AI が話した内容を項目に分けました。" if ja else "The on-device model sorted what you said.", 13, c["sec"], 400),
+          T(24, y + 64, "確かめてから使ってください。" if ja else "Check it before you use it.", 13, c["sec"], 400))
+    rl = LINES[lang][:9] + ([("1. 茶葉の種類を聞く", "t"), ("2. 紅茶は95度で3分、緑茶は70度で1分", "t"), ("3. 熱すぎたら30秒待って淹れ直す", "t")] if ja else
+                            [("1. Ask which tea", "t"), ("2. Black 95°C 3 min, green 70°C 1 min", "t"), ("3. Too hot? Wait 30 s, brew again", "t")])
+    s.add(editor_card(c, 16, y + 82, W - 32, 364, lang, show=12, status_line=False, lines=rl))
+    ry = y + 82 + 364 - 40
+    s.add(ok_dot(40, ry + 10, c["okc"], c["card"], 6), T(56, ry + 15, "7/7・決まりに合格" if ja else "7/7 · all rules passed", 13, c["sec"], 400, bg=c["card"]))
+    sy_ = y + 82 + 364 + 12
+    s.add(card(c, 16, sy_, W - 32, 44, r=22), T(34, sy_ + 28, "保存先" if ja else "Save to", 15, c["text"], 400, bg=c["card"]),
+          T(W - 52, sy_ + 28, "teapot-labs/tea-timer-skill", 13, c["sec"], 400, "end", bg=c["card"], font=MONO), chev(c, W - 38, sy_ + 22))
+    s.add(T(W / 2, sy_ + 76, "書き起こしを見る" if ja else "View Transcript", 15, c["text"], 500, "middle"),
+          f'<rect x="{W/2-tw("書き起こしを見る" if ja else "View Transcript",15)/2:.1f}" y="{sy_+80}" width="{tw("書き起こしを見る" if ja else "View Transcript",15):.1f}" height="1" fill="{c["text"]}"/>')
+    s.add(pill(c, 16, H - 166, W - 32, "エディタで開く" if ja else "Open in Editor"),
+          pill(c, 16, H - 102, W - 32, "やり直す" if ja else "Start Over", inverse=True), home(c, W, H))
+    return s.svg()
+
+
 files = {}
 for nm, c in (("light", LIGHT), ("dark", DARK)):
     files[f"iphone-S-01-{nm}"] = s01(c)
@@ -1122,6 +1253,13 @@ for nm, c in (("light", LIGHT), ("dark", DARK)):
     files[f"iphone-S-21-{nm}"] = s21(c)
     files[f"iphone-S-22-{nm}"] = s22(c)
     files[f"iphone-S-22-new-{nm}"] = s22(c, True)
+    files[f"iphone-S-23-{nm}"] = s23(c)
+    files[f"iphone-S-23-en-{nm}"] = s23(c, "en")
+    files[f"iphone-S-23-badge-{nm}"] = s23(c, badge=True)
+    files[f"iphone-S-24-{nm}"] = s24(c)
+    files[f"iphone-S-24-en-{nm}"] = s24(c, "en")
+    files[f"iphone-S-24-result-{nm}"] = s24(c, done=True)
+    files[f"iphone-S-24-result-en-{nm}"] = s24(c, "en", done=True)
     files[f"iphone-S-11-{nm}"] = s11(c)
     files[f"iphone-S-17-{nm}"] = s17(c)
     files[f"iphone-S-18-{nm}"] = s18(c)
