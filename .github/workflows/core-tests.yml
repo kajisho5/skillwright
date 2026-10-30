@@ -1,0 +1,41 @@
+name: Core tests (Linux)
+
+# Runs the screen-less parts (lint engine) on Linux. Free for public repositories.
+on:
+  push:
+    branches: [main]
+    paths: ["App/Core/**", "Tests/**", "Package.swift", "Package.resolved", ".github/workflows/core-tests.yml"]
+  pull_request:
+    paths: ["App/Core/**", "Tests/**", "Package.swift", "Package.resolved"]
+  workflow_dispatch:
+
+concurrency:
+  group: core-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SWIFT_VERSION: "6.4.1"
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Swift toolchain
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: ~/swift
+          key: swift-${{ env.SWIFT_VERSION }}-ubuntu24.04
+      - name: Install Swift
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/swift && cd ~/swift
+          curl -fsSL -o swift.tgz "https://download.swift.org/swift-${SWIFT_VERSION}-release/ubuntu2404/swift-${SWIFT_VERSION}-RELEASE/swift-${SWIFT_VERSION}-RELEASE-ubuntu24.04.tar.gz"
+          tar xzf swift.tgz --strip-components=1 && rm swift.tgz
+      - name: Test
+        run: |
+          export PATH="$HOME/swift/usr/bin:$PATH"
+          swift --version
+          swift test
