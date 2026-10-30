@@ -9,6 +9,7 @@ let package = Package(
     platforms: [.iOS(.v26), .macOS(.v26)],
     products: [
         .library(name: "LintEngine", targets: ["LintEngine"]),
+        .library(name: "EditorKit", targets: ["EditorKit"]),
     ],
     dependencies: [
         // Version pinned on purpose (design spec §7-2). Do not bump without updating the spec.
@@ -21,6 +22,8 @@ let package = Package(
             path: "App/Core/LintEngine",
             resources: [.process("Resources")]
         ),
+        .target(name: "EditorKit", path: "App/Core/EditorKit"),
+        .testTarget(name: "EditorKitTests", dependencies: ["EditorKit"], path: "Tests/EditorKitTests"),
         .testTarget(
             name: "LintEngineTests",
             dependencies: ["LintEngine"],

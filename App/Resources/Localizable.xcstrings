@@ -1,0 +1,456 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Files": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイル"
+          }
+        }
+      }
+    },
+    "Recents": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最近"
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "設定"
+          }
+        }
+      }
+    },
+    "No files yet": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "まだファイルがありません"
+          }
+        }
+      }
+    },
+    "Create one from a template.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ひな形から作れます。"
+          }
+        }
+      }
+    },
+    "New File": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新規作成"
+          }
+        }
+      }
+    },
+    "No recent files": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最近開いたファイルはありません"
+          }
+        }
+      }
+    },
+    "Checks": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "検査"
+          }
+        }
+      }
+    },
+    "Rules version": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "検査ルールの版"
+          }
+        }
+      }
+    },
+    "Version": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "版"
+          }
+        }
+      }
+    },
+    "Template": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ひな形"
+          }
+        }
+      }
+    },
+    "Skill name (also the folder name)": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "スキルの名前（フォルダ名にもなります）"
+          }
+        }
+      }
+    },
+    "File name": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイル名"
+          }
+        }
+      }
+    },
+    "Lowercase letters, numbers and hyphens only.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "小文字・数字・ハイフンだけ。"
+          }
+        }
+      }
+    },
+    "This name does not follow the rules.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "この名前は決まりに合っていません。"
+          }
+        }
+      }
+    },
+    "Close": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "閉じる"
+          }
+        }
+      }
+    },
+    "Create": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作成"
+          }
+        }
+      }
+    },
+    "Empty file": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空のファイル"
+          }
+        }
+      }
+    },
+    "Agent Skill (follows the spec)": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent Skill（決まりに合う形）"
+          }
+        }
+      }
+    },
+    "Instructions for Claude Code": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code への指示"
+          }
+        }
+      }
+    },
+    "Instructions for many agents": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "いろいろなエージェントへの指示"
+          }
+        }
+      }
+    },
+    "Explanation for people": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "人が読む説明"
+          }
+        }
+      }
+    },
+    "Markdown only": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "md だけ"
+          }
+        }
+      }
+    },
+    "Use lowercase letters, numbers and hyphens only.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "小文字・数字・ハイフンだけを使ってください。"
+          }
+        }
+      }
+    },
+    "A file with this name already exists.": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同じ名前のファイルがあります。"
+          }
+        }
+      }
+    },
+    "Heading": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "見出し"
+          }
+        }
+      }
+    },
+    "Bold": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "太字"
+          }
+        }
+      }
+    },
+    "List": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リスト"
+          }
+        }
+      }
+    },
+    "Checkbox": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "チェックボックス"
+          }
+        }
+      }
+    },
+    "Code": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "コード"
+          }
+        }
+      }
+    },
+    "Indent": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "字下げ"
+          }
+        }
+      }
+    },
+    "Undo": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "元に戻す"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完了"
+          }
+        }
+      }
+    },
+    "Check results": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "検査結果"
+          }
+        }
+      }
+    },
+    "%lld/%lld rules passed": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld/%2$lld 決まりに合格"
+          }
+        }
+      }
+    },
+    "Line %lld: %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld行目：%2$@"
+          }
+        }
+      }
+    },
+    "Agent Skills spec + Claude Code": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent Skills 仕様＋Claude Code"
+          }
+        }
+      }
+    },
+    "No problems found": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "問題はありません"
+          }
+        }
+      }
+    },
+    "%lld rule(s) skipped by markers": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "除外中 %lld件"
+          }
+        }
+      }
+    },
+    "Rules %@": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ルール %@"
+          }
+        }
+      }
+    },
+    "%lld error(s)": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "違反 %lld"
+          }
+        }
+      }
+    },
+    "%lld warning(s)": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "注意 %lld"
+          }
+        }
+      }
+    },
+    "All rules passed": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "決まりに合格"
+          }
+        }
+      }
+    },
+    "line %lld": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld行目"
+          }
+        }
+      }
+    },
+    "See source": {
+      "localizations": {
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "根拠を見る"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

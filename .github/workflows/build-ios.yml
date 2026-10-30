@@ -1,0 +1,40 @@
+name: Build iOS app (no signing)
+
+# Compiles the app for the simulator to catch errors. No signing, no upload.
+# Free for public repositories.
+on:
+  push:
+    branches: [main]
+    paths: ["App/**", "project.yml", "Package.swift", "Package.resolved", ".github/workflows/build-ios.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: build-ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tools
+        run: |
+          xcodebuild -version
+          brew install xcodegen
+          xcodegen --version
+      - name: Generate project
+        run: xcodegen generate
+      - name: Build
+        run: |
+          set -o pipefail
+          xcodebuild -project Skillwright.xcodeproj -scheme Skillwright \
+            -destination 'generic/platform=iOS Simulator' -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log | grep -E "error:|warning: .*deprecated|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" build.log
+      - name: Upload log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build.log

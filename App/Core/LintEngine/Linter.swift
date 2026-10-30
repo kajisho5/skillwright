@@ -209,7 +209,7 @@ public struct Linter: Sendable {
         }
     }
 
-    static func isValidName(_ name: String) -> Bool {
+    public static func isValidName(_ name: String) -> Bool {
         guard let first = name.first, let last = name.last, first != "-", last != "-" else { return false }
         if name.contains("--") { return false }
         return name.allSatisfy { ("a"..."z").contains($0) || ("0"..."9").contains($0) || $0 == "-" }

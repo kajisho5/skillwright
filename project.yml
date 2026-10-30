@@ -1,0 +1,71 @@
+# XcodeGen settings. The .xcodeproj is generated on the Mac runner (`xcodegen generate`)
+# and is not committed. https://github.com/yonaskolb/XcodeGen
+name: Skillwright
+options:
+  bundleIdPrefix: com.seventhwell
+  deploymentTarget:
+    iOS: "26.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+packages:
+  SkillwrightCore:
+    path: .
+settings:
+  base:
+    MARKETING_VERSION: 0.1.0
+    CURRENT_PROJECT_VERSION: 1
+    SWIFT_VERSION: "6.0"
+    SWIFT_DEFAULT_ACTOR_ISOLATION: MainActor
+    SWIFT_APPROACHABLE_CONCURRENCY: YES
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+targets:
+  Skillwright:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+        excludes:
+          - "Core/**"
+    dependencies:
+      - package: SkillwrightCore
+        product: LintEngine
+      - package: SkillwrightCore
+        product: EditorKit
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Skillwright
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en, ja]
+        ITSAppUsesNonExemptEncryption: false
+        LSSupportsOpeningDocumentsInPlace: true
+        UIFileSharingEnabled: true
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.seventhwell.skillwright
+        TARGETED_DEVICE_FAMILY: "1,2"
+        CODE_SIGN_STYLE: Automatic
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+schemes:
+  Skillwright:
+    build:
+      targets:
+        Skillwright: all
+    run:
+      config: Debug
+    archive:
+      config: Release

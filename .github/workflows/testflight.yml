@@ -1,0 +1,21 @@
+name: testflight
+
+# Build, sign and send to TestFlight through kajisho5/runway. Manual only (or a v* tag).
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    uses: kajisho5/runway/.github/workflows/apple-testflight.yml@main
+    with:
+      bundle_id: com.seventhwell.skillwright
+      project: Skillwright.xcodeproj
+      scheme: Skillwright
+      runner: macos-26
+      pre_build: brew install xcodegen && xcodegen generate
+    secrets: inherit
