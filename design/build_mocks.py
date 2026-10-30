@@ -341,6 +341,9 @@ def editor_card(c, x, y, w, h, lang, show=12, status_line=True, lines=None):
             p.append(T(lx + 22, ly, tt, 15, c["text"], 400, bg=c["card"]))
             if role == "cur":
                 p.append(f'<rect x="{lx+22+tw(tt,15)+3:.1f}" y="{ly-14}" width="2" height="18" fill="{c["text"]}"/>')
+        elif role == "rawcur":
+            p.append(T(lx, ly, s, 15, c["text"], 400, bg=c["card"], font=MONO))
+            p.append(f'<rect x="{lx+tw(s,15,True)+3:.1f}" y="{ly-14}" width="2" height="18" fill="{c["text"]}"/>')
         elif role == "bad":
             pre, rest = s.split("[", 1)
             p.append(f'<circle cx="{x+12}" cy="{ly-5}" r="3" fill="{c["warn"]}"/>')
@@ -1229,6 +1232,121 @@ def s24(c, lang="ja", done=False):
     return s.svg()
 
 
+def kb_strip(c, w, y0, items):
+    """Replace the predictive strip of the keyboard with custom actions."""
+    o = [f'<rect x="0" y="{y0}" width="{w}" height="44" fill="{c["kb"]}"/>']
+    n = len(items)
+    for i, it in enumerate(items):
+        cx = w * (i + 0.5) / n
+        o.append(T(cx, y0 + 27, it, 13, c["text"], 600 if i == n - 1 else 500, "middle", bg=c["kb"]))
+        if i:
+            o.append(f'<rect x="{w*i/n:.1f}" y="{y0+12}" width="1" height="20" fill="{c["sec"]}" fill-opacity="0.35"/>')
+    return "".join(o)
+
+
+def s03_slash(c, lang="ja"):
+    ja = lang == "ja"
+    t = L[lang]
+    s = Screen(c)
+    s.add(status(c, W), nav(c, W, "SKILL.md", t["unpublished"], "back", "dots"))
+    lines = LINES[lang][:10] + [("/", "rawcur")]
+    s.add(editor_card(c, 16, 120, W - 32, 372, lang, show=11, status_line=False, lines=lines))
+    s.add(pill(c, 16, 506, W - 32, t["done"], 48))
+    # floating menu above the slash line (line 11 baseline = 120+38+240 = 398)
+    mx, my, mw = 56, 122, 300
+    items = ([("H2", "見出し 2", "節の見出し"), ("•", "箇条書き", "- で始まる行"), ("☐", "チェックリスト", "- [ ] で始まる行"),
+              ("▦", "表", "3列×2行の表"), ("{}", "コードブロック", "``` で囲む"), ("↗", "リンク", "[文字](URL)")]
+             if ja else
+             [("H2", "Heading 2", "Section title"), ("•", "Bulleted list", "Starts with -"), ("☐", "Checklist", "Starts with - [ ]"),
+              ("▦", "Table", "3 columns × 2 rows"), ("{}", "Code block", "Fenced with ```"), ("↗", "Link", "[text](URL)")])
+    rh = 44
+    mh = 254
+    s.add(f'<rect x="{mx}" y="{my+4}" width="{mw}" height="{mh}" rx="20" fill="#000000" fill-opacity="{0.08 if c["mode"]=="light" else 0.4}"/>',
+          f'<rect x="{mx}" y="{my}" width="{mw}" height="{mh}" rx="20" fill="{c["sheet"]}" stroke="{c["btn_line"]}"/>',
+          f'<clipPath id="slashclip"><rect x="{mx}" y="{my}" width="{mw}" height="{mh}" rx="20"/></clipPath>')
+    s.add('<g clip-path="url(#slashclip)">')
+    for i, (g, n, d) in enumerate(items):
+        ry = my + 6 + i * rh
+        rb = c["sheet"]
+        if i == 0:
+            rb = c["fill"]
+            s.add(f'<rect x="{mx+6}" y="{ry}" width="{mw-12}" height="{rh}" rx="12" fill="{rb}"/>')
+        s.add(T(mx + 30, ry + 27, g, 13, c["text"], 700, "middle", bg=rb, font=MONO),
+              T(mx + 56, ry + 27, n, 15, c["text"], 600 if i == 0 else 400, bg=rb),
+              T(mx + mw - 16, ry + 27, d, 12, c["sec"], 400, "end", bg=rb, font=MONO if d[0] in "-`[3" and not ja else SANS))
+    s.add('</g>')
+    s.add(keyboard(c, W, H, H - 290).replace("空白", "空白" if ja else "space"))
+    s.add(kb_strip(c, W, H - 290, ["↑", "↓", "閉じる" if ja else "Close", "入れる" if ja else "Insert"]))
+    s.add(home(c, W, H))
+    return s.svg()
+
+
+def s03_table(c):
+    t = L["ja"]
+    s = Screen(c)
+    s.add(status(c, W), nav(c, W, "SKILL.md", t["unpublished"], "back", "dots"))
+    s.add(card(c, 16, 120, W - 32, 372))
+    lines = [("## 抽出の表", "h")]
+    ly = 158
+    s.add(T(52, ly, "14", 11, c["sec"], 400, "end", bg=c["card"], font=MONO), T(62, ly, "##", 15, c["sec"], 400, bg=c["card"], font=MONO),
+          T(86, ly, "抽出の表", 15, c["text"], 700, bg=c["card"]))
+    gx, gy, cw_, rh = 40, 178, [104, 104, 106], 44
+    rows = [("種類", "温度", "時間"), ("紅茶", "95℃", "3分"), ("緑茶", "70℃", "1分"), ("ほうじ茶", "90℃", "")]
+    gw = sum(cw_)
+    s.add(f'<rect x="{gx}" y="{gy}" width="{gw}" height="{rh*len(rows)}" rx="10" fill="none" stroke="{c["text"]}" stroke-opacity="0.35"/>')
+    for r, row in enumerate(rows):
+        cy = gy + r * rh
+        if r:
+            s.add(hair(c, gx, cy, gw))
+        if r == 0:
+            s.add(f'<path d="M{gx} {cy+rh}h{gw}" stroke="{c["text"]}" stroke-opacity="0.35"/>')
+        cx = gx
+        for k, v in enumerate(row):
+            if k:
+                s.add(f'<rect x="{cx}" y="{cy}" width="1" height="{rh}" fill="{c["hair"]}"/>')
+            if r == 3 and k == 2:
+                s.add(f'<rect x="{cx+3}" y="{cy+3}" width="{cw_[k]-6}" height="{rh-6}" rx="8" fill="none" stroke="{c["text"]}" stroke-width="2"/>',
+                      T(cx + 12, cy + 28, "30秒", 15, c["text"], 400, bg=c["card"]),
+                      f'<rect x="{cx+12+tw("30秒",15)+2:.1f}" y="{cy+13}" width="2" height="19" fill="{c["text"]}"/>')
+            else:
+                s.add(T(cx + 12, cy + 28, v, 15 if r else 13, c["text"] if r else c["sec"], 400 if r else 600, bg=c["card"], font=MONO if v[:1].isdigit() else SANS))
+            cx += cw_[k]
+    s.add(T(40, gy + rh * 4 + 30, "マスで編集中です。「閉じる」で md に戻ります。", 12, c["sec"], 400, bg=c["card"]))
+    s.add(pill(c, 16, 506, W - 32, t["done"], 48))
+    s.add(keyboard(c, W, H, H - 290))
+    s.add(kb_strip(c, W, H - 290, ["＋行", "＋列", "←列", "列→", "揃え", "消す…", "閉じる"]))
+    s.add(home(c, W, H))
+    return s.svg()
+
+
+def s03_live(c):
+    t = L["ja"]
+    s = Screen(c)
+    s.add(status(c, W), nav(c, W, "SKILL.md", t["unpublished"], "back", "dots"))
+    s.add(card(c, 16, 120, W - 32, 372))
+    x = 36
+    s.add(f'<rect x="{x-6}" y="140" width="{W-60}" height="56" rx="12" fill="{c["tint"]}"/>',
+          T(x + 6, 162, "name", 12, c["sec"], 400, bg=c["tint"], font=MONO), T(x + 92, 162, "tea-timer", 14, c["text"], 500, bg=c["tint"], font=MONO),
+          T(x + 6, 184, "description", 12, c["sec"], 400, bg=c["tint"], font=MONO), T(x + 92, 184, "お茶の種類ごとに抽出時間を…", 14, c["text"], 400, bg=c["tint"]))
+    s.add(T(x, 238, "お茶タイマー", 24, c["text"], 700, bg=c["card"]))
+    s.add(T(x, 276, "使い方", 19, c["text"], 700, bg=c["card"]))
+    s.add(T(x, 308, "1.", 15, c["sec"], 400, bg=c["card"]), T(x + 22, 308, "茶葉の種類を聞く", 15, c["text"], 400, bg=c["card"]))
+    s.add(T(x, 334, "2.", 15, c["sec"], 400, bg=c["card"]), T(x + 22, 334, "下の表で時間を決める", 15, c["text"], 400, bg=c["card"]))
+    # current paragraph: raw markers visible
+    s.add(f'<rect x="{x-6}" y="350" width="{W-60}" height="34" rx="8" fill="{c["fill"]}"/>')
+    pre = "詳しくは"
+    s.add(T(x, 372, pre, 15, c["text"], 400, bg=c["fill"]))
+    bx = x + tw(pre, 15) + 2
+    rest = "[抽出の表](refe"
+    s.add(T(bx, 372, rest, 15, c["text"], 400, bg=c["fill"], font=MONO),
+          f'<rect x="{bx+tw(rest,15,True)+2:.1f}" y="358" width="2" height="18" fill="{c["text"]}"/>')
+    s.add(warn_tri(40, 462, c["warn"], c["card"], 5.5), T(52, 467, t["lint_line"], 12, c["sec"], 400, bg=c["card"]))
+    s.add(pill(c, 16, 506, W - 32, t["done"], 48))
+    s.add(keyboard(c, W, H, H - 290))
+    s.add(home(c, W, H))
+    return s.svg()
+
+
 files = {}
 for nm, c in (("light", LIGHT), ("dark", DARK)):
     files[f"iphone-S-01-{nm}"] = s01(c)
@@ -1237,6 +1355,10 @@ for nm, c in (("light", LIGHT), ("dark", DARK)):
     files[f"iphone-S-02-loading-{nm}"] = s02(c, mode="loading")
     files[f"iphone-S-02-ax5-{nm}"] = s02(c, mode="ax5")
     files[f"iphone-S-03-{nm}"] = s03(c)
+    files[f"iphone-S-03-slash-{nm}"] = s03_slash(c)
+    files[f"iphone-S-03-slash-en-{nm}"] = s03_slash(c, "en")
+    files[f"iphone-S-03-table-{nm}"] = s03_table(c)
+    files[f"iphone-S-03-live-{nm}"] = s03_live(c)
     files[f"iphone-S-04-{nm}"] = s04(c)
     files[f"iphone-S-05-{nm}"] = s05(c)
     files[f"iphone-S-06-{nm}"] = s06(c)
